@@ -8,7 +8,7 @@ export function SessionProvider({
   session,
 }: {
   children: React.ReactNode;
-  session: any;
+  session?: any;
 }) {
   return (
     <NextAuthSessionProvider session={session}>
