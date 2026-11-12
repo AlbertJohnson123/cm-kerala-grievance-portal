@@ -1,7 +1,8 @@
-import { prisma } from "@/lib/prisma";
-import { Building2, Users, FileText, ArrowRight } from "lucide-react";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect, useState } from "react";
+import { Building2, Users, FileText, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const FALLBACK_DEPARTMENTS = [
   {
@@ -76,27 +77,22 @@ const FALLBACK_DEPARTMENTS = [
   },
 ];
 
-export default async function DepartmentsPage() {
-  let departments = FALLBACK_DEPARTMENTS;
+export default function DepartmentsPage() {
+  const [departments, setDepartments] = useState<any[]>(FALLBACK_DEPARTMENTS);
+  const [loading, setLoading] = useState(false);
 
-  try {
-    const fetched = await prisma.department.findMany({
-      include: {
-        _count: {
-          select: {
-            grievances: true,
-            officers: true,
-          },
-        },
-      },
-      orderBy: { name: "asc" },
-    });
-    if (fetched && fetched.length > 0) {
-      departments = fetched;
-    }
-  } catch (error) {
-    console.warn("Using fallback department list in serverless:", error);
-  }
+  useEffect(() => {
+    fetch("/api/departments")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setDepartments(data);
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not fetch departments from API, using default list:", err);
+      });
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
@@ -116,7 +112,7 @@ export default async function DepartmentsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {departments.map((dept) => (
           <div
-            key={dept.id}
+            key={dept.id || dept.code}
             className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4"
           >
             <div className="space-y-3">
