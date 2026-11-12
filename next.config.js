@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    outputFileTracingIncludes: {
+      "/**": ["./prisma/**/*"],
+    },
+  },
   images: {
-    domains: ['localhost'],
+    domains: ["localhost"],
   },
 };
 
