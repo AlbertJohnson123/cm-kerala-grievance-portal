@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Register error:", error);
     return NextResponse.json(
-      { error: "Registration failed due to a server error." },
+      { error: error?.message || "Registration failed due to a server error." },
       { status: 500 }
     );
   }
